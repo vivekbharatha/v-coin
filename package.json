@@ -1,0 +1,22 @@
+{
+  "name": "v-coin",
+  "version": "1.0.0",
+  "description": "A better experience on building blockchain with JS",
+  "main": "vCoin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vivekbharatha/v-coin.git"
+  },
+  "author": "Vivek Bharatha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vivekbharatha/v-coin/issues"
+  },
+  "homepage": "https://github.com/vivekbharatha/v-coin#readme",
+  "dependencies": {
+    "crypto-js": "^3.1.9-1"
+  }
+}
