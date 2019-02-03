@@ -8,7 +8,7 @@ const myWalletAddress = myKey.getPublic('hex');
 
 let vCoin = new Blockchain();
 
-const tx1 = new Transaction(myWalletAddress, 'publc key goes here', 1);
+const tx1 = new Transaction(myWalletAddress, 'address1', 1);
 tx1.signTransaction(myKey);
 vCoin.addTransaction(tx1);
 
@@ -18,3 +18,4 @@ console.log('Balance: ', vCoin.getBalanceOfAddress(myWalletAddress));
 
 // console.log(JSON.stringify(vCoin, null, 2));
 console.log('is chain valid ?', vCoin.isChainValid());
+console.log(vCoin.getAllTransactionsForWallet(myWalletAddress));
