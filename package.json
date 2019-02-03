@@ -2,7 +2,7 @@
   "name": "v-coin",
   "version": "1.0.0",
   "description": "A better experience on building blockchain with JS",
-  "main": "src/vCoin.js",
+  "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/vivekbharatha/v-coin#readme",
   "dependencies": {
-    "crypto-js": "^3.1.9-1"
+    "crypto-js": "^3.1.9-1",
+    "elliptic": "^6.4.1"
   }
 }

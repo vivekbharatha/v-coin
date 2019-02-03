@@ -1,10 +1,36 @@
 const SHA256 = require('crypto-js/sha256');
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
 
 class Transaction {
   constructor(fromAddress, toAddress, amount) {
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
+  }
+
+  calculateHash() {
+    return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
+  }
+
+  signTransaction(signingKey) {
+    if (signingKey.getPublic('hex') !== this.fromAddress) {
+      throw new Error('Unauthorised for this wallet');
+    }
+    const hashTx = this.calculateHash();
+    const sig = signingKey.sign(hashTx, 'base64');
+    this.signature = sig.toDER('hex');
+  }
+
+  isValid() {
+    if (this.fromAddress === null) return true;
+
+    if (!this.signature || this.signature.length === 0) {
+      throw new Error('No signature for this transaction');
+    }
+
+    const publicKey = ec.keyFromPublic(this.fromAddress, 'hex');
+    return publicKey.verify(this.calculateHash(), this.signature);
   }
 }
 
@@ -28,6 +54,15 @@ class Block {
     }
 
     console.log('Block mined: ' + this.hash);
+  }
+
+  hasValidTransactions() {
+    for (const tx of this.transactions) {
+      if (!tx.isValid()) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 
@@ -63,7 +98,16 @@ class Blockchain {
     this.pendingTransactions = [];
   }
 
-  createTransaction(transaction) {
+  addTransaction(transaction) {
+
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw new Error('Transaction must include from address and to address');
+    }
+
+    if (!transaction.isValid()) {
+      throw new Error('Cannot add invalid transaction');
+    }
+
     this.pendingTransactions.push(transaction);
   }
 
@@ -89,6 +133,10 @@ class Blockchain {
       const currentBlock = this.chain[c];
       const previousBlock = this.chain[c-1];
 
+      if (!currentBlock.hasValidTransactions()) {
+        return false;
+      }
+
       if (currentBlock.hash !== currentBlock.calculateHash()) {
         return false;
       }
@@ -102,12 +150,5 @@ class Blockchain {
   }
 }
 
-let vCoin = new Blockchain();
-vCoin.createTransaction(new Transaction('ad1', 'ad2', 110));
-vCoin.createTransaction(new Transaction('ad2', 'ad1', 10));
-
-console.log('Starting the miner.....');
-vCoin.minePendingTransactions('vivek-vcoin');
-console.log('Balance of vivek-vcoin', vCoin.getBalanceOfAddress('vivek-vcoin'));
-console.log('Balance of vivek-vcoin', vCoin.getBalanceOfAddress('ad1'));
-console.log('Balance of vivek-vcoin', vCoin.getBalanceOfAddress('ad2'));
+module.exports.Blockchain = Blockchain;
+module.exports.Transaction = Transaction;
